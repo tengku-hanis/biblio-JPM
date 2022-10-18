@@ -157,7 +157,8 @@ ldata %>%
   labs(color = "Distribution:") +
   ylab("Frequency of authors") +
   xlab("Number of articles") +
-  theme(legend.position = "top")
+  theme(legend.position = "top") +
+  annotate(geom = "text", x = 8.5, y = 0.2, label = paste("P-value = ", round(L$p.value, digits = 3)))
 
 ## 2) Bradford's law ----
 
@@ -207,8 +208,7 @@ thematicEvolution(dat, field = "DE", #"ID","DE", "TI", "AB"
 
 trend_kw <- fieldByYear(dat, field = "ID", timespan = c(2010,2019),
                         min.freq = 1, n.items = 5, graph = TRUE) 
-trend_kw$graph +
-  labs(title = "")
+trend_kw$graph 
 
 # Another way to plot trending keywords
 dat <- trend_kw$df_graph
