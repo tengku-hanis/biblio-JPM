@@ -4,6 +4,9 @@
 
 # Packages ----------------------------------------------------------------
 
+install.packages("devtools")
+devtools::install_github("massimoaria/bibliometrix")
+
 library(bibliometrix)
 library(tidyverse)
 theme_set(theme_bw())
@@ -15,7 +18,7 @@ data("bibtag"); View(bibtag)
 
 # Data --------------------------------------------------------------------
 
-link <- "https://raw.githubusercontent.com/tengku-hanis/webinar_biblio24-09-2020/master/scopus_acanthoma.bib"
+link <- "https://raw.githubusercontent.com/tengku-hanis/bibliometrics-Jan18-2022/main/mbc.bib"
 dat <- convert2df(file = link, dbsource = "scopus", format = "bibtex")
 names(dat)
 dim(dat)
@@ -39,16 +42,13 @@ dat %>%
   select(DI) %>%
   summarise(DI = sum(duplicated(DI)))
 
-## Extract all duplicates - TI
-dat[duplicated(dat$DI) | duplicated(dat$DI, fromLast = T), "DI"] 
-
 
 # Descriptive -------------------------------------------------------------
 
 result <- biblioAnalysis(dat)
 summary(result, k=10)
 
-P <- plot(result, k=10)
+P <- plot(result, k = 10)
 
 P$MostProdAuthors
 P$MostProdCountries
@@ -60,7 +60,7 @@ P$AverTotCitperYear
 # Funded research ---------------------------------------------------------
 
 table(is.na(dat$FU)) %>% 
-  prop.table()*100 #2.8% funded
+  prop.table()*100 #31.8% funded
 
 
 # Citation related metrics  -----------------------------------------------
@@ -92,7 +92,7 @@ summary(networkStat(country_collab))
 
 # Plot
 set.seed(123)
-ccPlot <- networkPlot(country_collab, n = 30, cluster = "none", #try "optimal"
+networkPlot(country_collab, n = 30, cluster = "none", #try "optimal"
                       Title = "Countries collaboration", type = "circle",
                       size.cex = T)
 
@@ -138,7 +138,7 @@ L$Beta #beta coeeficient of Lotka's law
 L$R2 #GOF of Lotka's law (r^2)
 
 # P value of K-S two sample test
-L$p.value #there is no sig diff btwn observed and theoretical distribut.
+L$p.value #there is a sig diff btwn observed and theoretical distribut.
 
 # Theoretical distribution with Beta = 2
 Theoretical <- 10^(log10(L$C)-2*log10(L$AuthorProd[,1]))
@@ -158,7 +158,7 @@ ldata %>%
   ylab("Frequency of authors") +
   xlab("Number of articles") +
   theme(legend.position = "top") +
-  annotate(geom = "text", x = 8.5, y = 0.2, label = paste("P-value = ", round(L$p.value, digits = 3)))
+  annotate(geom = "text", x = 5.5, y = 0.2, label = paste("P-value = ", round(L$p.value, digits = 3)))
 
 ## 2) Bradford's law ----
 
@@ -178,14 +178,21 @@ bl$table %>%
 
 # Miscellaneous metrics ----------------------------------------------------
 
-# ## 1) Conceptual structure ----
-# 
-# conceptualStructure(dat, field = "ID", stemming = F)
-# 
-# ## 2) History network ----
-# 
-# histData <- histNetwork(dat, sep = ";")
-# histPlot(histData)
+# Top 100 - smaller data
+dat2 <- 
+  dat %>% 
+  arrange(desc(TC)) %>% 
+  slice(1:100)
+
+## 1) Conceptual structure ----
+
+conceptualStructure(dat2, field = "ID", stemming = F)
+
+## 2) History network ----
+
+hist_data <- histNetwork(dat) 
+
+histPlot(hist_data) #not sure why the error
 
 ## 3) Thematic map ----
 
@@ -195,7 +202,7 @@ plot(Map$map)
 
 Map$documentToClusters %>% view()
 Map$documentToClusters %>% 
-  filter(Assigned_cluster == "epidermoid") %>% 
+  filter(Assigned_cluster == "genetics") %>% 
   select(TI, DI)
 
 ## 4) Thematic evolution ----
@@ -227,7 +234,7 @@ dom
 ?dominance #detail how dominance factor calculated
 
 ## 7) Top-author productivity over time ----
-
+# dat <- convert2df(file = link, dbsource = "scopus", format = "bibtex")
 topAU <- authorProdOverTime(dat, k=10)
 topAU$graph +
   theme_bw()
@@ -235,8 +242,5 @@ topAU$graph +
 head(topAU$dfAU) #author's productivity per year
 head(topAU$dfPapersAU) #author's document list
 
-
-# Biblioshiny -------------------------------------------------------------
-
-biblioshiny()
-
+## 8) Three fields plot
+threeFieldsPlot(dat, fields = c("AU", "DE", "SO"), n = c(20, 20, 20))
