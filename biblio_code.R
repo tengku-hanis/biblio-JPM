@@ -6,6 +6,7 @@
 
 install.packages("devtools")
 devtools::install_github("massimoaria/bibliometrix")
+install.packages("ggrepel")
 
 library(bibliometrix)
 library(tidyverse)
