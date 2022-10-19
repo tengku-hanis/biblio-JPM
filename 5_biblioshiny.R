@@ -4,4 +4,4 @@
 
 # Biblioshiny -------------------------------------------------------------
 
-biblioshiny()
+bibliometrix::biblioshiny()
