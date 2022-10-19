@@ -4,8 +4,7 @@
 
 # Packages ----------------------------------------------------------------
 
-install.packages("devtools")
-devtools::install_github("massimoaria/bibliometrix")
+install.packages("bibliometrix")
 install.packages("ggrepel")
 
 library(bibliometrix)
