@@ -5,6 +5,7 @@
 # Packages ----------------------------------------------------------------
 
 install.packages("bibliometrix")
+install.packages("tidyverse")
 install.packages("ggrepel")
 
 library(bibliometrix)
